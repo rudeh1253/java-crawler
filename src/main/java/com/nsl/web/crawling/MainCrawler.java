@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import com.nsl.web.data.DataContainer;
 import com.nsl.web.data.HTMLContainer;
@@ -28,6 +27,8 @@ public abstract class MainCrawler {
     private final Set<String> visited;
     private String cookies;
     private Map<String, String> requestProperties;
+    private int threadCount = 0;
+    private Object lock = new Object();
     
     /**
      * Constructor.
@@ -63,24 +64,43 @@ public abstract class MainCrawler {
     public final void run() throws InterruptedException, ExecutionException, IOException {
         ExecutorService executor = Executors.newFixedThreadPool(this.threadPoolSize);
         processSingleUnit(ENTRY_URL, executor);
+        synchronized (lock) {
+            while (threadCount != 0) {
+                lock.wait();
+            }
+        }
         executor.shutdown();
     }
     
     private void processSingleUnit(String urlToBrowse, ExecutorService executor)
-            throws InterruptedException, ExecutionException {
-        Future<List<String>> nextTargatesInFuture = executor.submit(() -> executionInCallable(urlToBrowse));
+            throws InterruptedException, ExecutionException, IOException {
+        synchronized (lock) {
+            threadCount++;
+        }
+        List<String> nextTargets = executionInCallable(urlToBrowse);
         // DFS
-        List<String> nextTargets = nextTargatesInFuture.get();
         for (String target : nextTargets) {
             if (!this.visited.contains(target)) {
                 this.visited.add(urlToBrowse);
-                processSingleUnit(target, executor);
+                executor.submit(() -> {
+                    try {
+                        processSingleUnit(target, executor);
+                    } catch (InterruptedException | ExecutionException | IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+        synchronized (lock) {
+            threadCount--;
+            if (threadCount == 0) {
+                lock.notify();
             }
         }
     }
     
-    private List<String> executionInCallable(String urlToBrowse) throws Exception {
-        System.out.println(Thread.currentThread().getName()); // TODO
+    private List<String> executionInCallable(String urlToBrowse) throws IOException {
         DataContainer container = fetchPage(urlToBrowse);
         HTMLContainer htmlContainer = (HTMLContainer)container.getData();
         processPage(htmlContainer, urlToBrowse);
@@ -166,7 +186,7 @@ public abstract class MainCrawler {
      * Find target URLs to fetch next. (In DFS method)
      * If the list containing next targets contains visited URLs already,
      * such targets will be ignored. 
-     * @param html TODO
+     * @param html current page which finding next targets within
      * @param thisPageURL URL of the page being processed now.
      * @return a list of target URLs.
      */

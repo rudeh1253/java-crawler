@@ -17,7 +17,7 @@ import com.nsl.web.data.HTMLContainer;
  * @author PGD
  */
 class HttpsRequestHTML extends HttpsRequest {
-    private static final int CONNECT_TIMEOUT = 1500;
+    private static final int CONNECT_TIMEOUT = 3000;
 
     public HttpsRequestHTML(String url) throws IOException {
         super(url);
