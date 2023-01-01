@@ -23,6 +23,7 @@ public class TestClass extends MainCrawler {
     @Override
     public void processPage(String html, String thisPageURL) {
         // Implement how to process each web page
+        // You may make use of Jsoup to parse HTMLs
     }
     
     @Override
