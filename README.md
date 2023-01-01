@@ -51,4 +51,3 @@ public class Main {
 ```
 
 ## Issues to fix
-- There seems to exist bugs in execution processing each web page concurrently. I have to fix concurrent issue.
