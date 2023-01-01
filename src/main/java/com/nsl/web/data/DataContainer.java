@@ -77,6 +77,11 @@ public class DataContainer {
 	}
     }
     
+    /**
+     * Enumerating data types which can be stored the container.s
+     * 
+     * @author PGD
+     */
     public static enum DataType {
 	HTML, IMAGE
     }

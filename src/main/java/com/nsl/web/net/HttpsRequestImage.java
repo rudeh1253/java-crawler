@@ -8,6 +8,12 @@ import com.nsl.web.data.DataContainer;
 import com.nsl.web.data.ImageContainer;
 import com.nsl.web.data.DataContainer.DataType;
 
+/**
+ * Given URL from the client, an object responsible to send request for an image
+ * to the URL.
+ * 
+ * @author PGD
+ */
 class HttpsRequestImage extends HttpsRequest {
     private static final int BUFFER_SIZE = 1024;
     private static final int CONNECT_TIMEOUT = 1500;

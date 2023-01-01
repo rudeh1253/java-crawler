@@ -8,27 +8,46 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * A class containing image data.
+ * 
+ * @author PGD
+ */
 public class ImageContainer {
-    private List<BufferElement> imageData;
+    private final List<BufferElement> imageData;
     
     public ImageContainer() {
 	imageData = new LinkedList<>();
     }
     
     /**
+     * Store the buffer data in this image data.
      * 
-     * 
-     * @param buffer
+     * @param buffer should contain a buffer of image data
+     *               and its length.
      */
     public void addBuffer(BufferElement buffer) {
 	imageData.add(buffer);
     }
     
+    /**
+     * Write a file containing the image data.
+     * 
+     * @param path where to write the file. Folders within the specified path should
+     *             exist.
+     * @throws IOException in the cases of some errors occur in the process to write a file. 
+     */
     public void writeAsFile(String path) throws IOException {
 	File file = new File(path);
 	writeAsFile(file);
     }
     
+    /**
+     * Write a file containing the image data.
+     * 
+     * @param file object specifying information of a file to write.
+     * @throws IOException in the cases of some errors occur in the process to write a file.
+     */
     public void writeAsFile(File file) throws IOException {
 	BufferedOutputStream bw = null;
 	try {
@@ -41,6 +60,12 @@ public class ImageContainer {
 	}
     }
     
+    /**
+     * Write a file containing the image data.
+     * 
+     * @param os file output stream.
+     * @throws IOException in the cases of some errors occur in the process to write a file.
+     */
     public void writeAsFile(OutputStream os) throws IOException {
 	for (BufferElement buffer : this.imageData) {
 	    os.write(buffer.buffer, 0, buffer.len);
@@ -48,7 +73,8 @@ public class ImageContainer {
     }
     
     /**
-     * Construct class in order to deal with multiple data type as a type.
+     * For dealing with multiple data type as a type.
+     * It is similar to structure in C.
      * It contains image data of each buffer.
      */
     public static class BufferElement {

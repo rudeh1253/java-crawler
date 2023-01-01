@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,6 +14,13 @@ import com.nsl.web.data.DataContainer;
 import com.nsl.web.data.HTMLContainer;
 import com.nsl.web.net.HttpsRequest;
 
+/**
+ * Crawler class defining execution of crawling.
+ * Inherit this class, implement abstract methods, instantiate the subclass, and then
+ * call run() method.
+ * 
+ * @author PGD
+ */
 public abstract class MainCrawler {
     private static final int DEFAULT_THREAD_POOL_SIZE = 10;
     private final String ENTRY_URL;
@@ -51,7 +57,8 @@ public abstract class MainCrawler {
     }
     
     /**
-     * Start web crawling.
+     * Start web crawling. After defining abstract functions and set request properties,
+     * just call this method to start crawling.
      */
     public final void run() throws InterruptedException, ExecutionException, IOException {
 	ExecutorService executor = Executors.newFixedThreadPool(this.threadPoolSize);
@@ -99,10 +106,6 @@ public abstract class MainCrawler {
 	}
     }
     
-    public void processPage(HTMLContainer htmlContainer, String thisPageURL) {
-	processPage(htmlContainer.toString(), thisPageURL);
-    }
-    
     /**
      * Set cookies into request.
      * The String should be the following format:
@@ -137,6 +140,17 @@ public abstract class MainCrawler {
      */
     public void setRequestProperty(Map<String, String> properties) {
 	this.requestProperties = properties;
+    }
+    
+    /**
+     * Process fetched HTML data.
+     * The responsibility to define how to parse the page is on you.
+     * 
+     * @param htmlContainer web page data.
+     * @param thisPageURL URL of the page being processed now.
+     */
+    public void processPage(HTMLContainer htmlContainer, String thisPageURL) {
+	processPage(htmlContainer.toString(), thisPageURL);
     }
     
     /**

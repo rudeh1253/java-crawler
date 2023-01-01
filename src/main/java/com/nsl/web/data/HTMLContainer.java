@@ -3,7 +3,7 @@ package com.nsl.web.data;
 /**
  * A class containing HTML file.
  * Its inner state doesn't change such that this is guaranteed an
- * invariable type.  
+ * immutable type.  
  * 
  * @author PGD
  */

@@ -40,15 +40,6 @@ public abstract class HttpsRequest {
 	this.cookies = null;
 	this.requestProperties = null;
     }
-
-    /**
-     * 
-     * @return
-     * @throws IOException
-     */
-    public final DataContainer request() throws IOException {
-	return execute();
-    }
     
     /**
      * Set cookies into the HTTP request.
@@ -72,6 +63,17 @@ public abstract class HttpsRequest {
     
     public void setProperties(Map<String, String> properties) {
 	this.requestProperties = properties;
+    }
+
+    /**
+     * The main procedure to send request to the URL.
+     * Just call this method to send request and get response.
+     * 
+     * @return response data.
+     * @throws IOException
+     */
+    public final DataContainer request() throws IOException {
+	return execute();
     }
     
     /**
@@ -119,14 +121,20 @@ public abstract class HttpsRequest {
     protected abstract void setConnection(HttpsURLConnection conn) throws IOException;
     
     /**
-     * Store data to container.
+     * Defining how to store data to DataContainer object.
+     * Given a connection to the URL, take InputStream from the connection,
+     * and get data through the stream.
      * 
-     * @param container
-     * @param conn
-     * @param isSuccess
+     * @param container instance where data is stored.
+     * @param conn instance which connects 
+     * @param isSuccess true if building connection was successful,
+     *                  false if building connection failed,
+     *                  according to the response code.
      * @throws IOException
      */
-    protected abstract void storeData(DataContainer container, HttpsURLConnection conn, boolean isSuccess) throws IOException;
+    protected abstract void storeData(DataContainer container,
+	                              HttpsURLConnection conn,
+	                              boolean isSuccess) throws IOException;
     
     private void close(HttpsURLConnection conn) throws IOException {
 	if (conn != null) {

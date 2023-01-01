@@ -11,7 +11,7 @@ import com.nsl.web.data.DataContainer.DataType;
 import com.nsl.web.data.HTMLContainer;
 
 /**
- * Given URL from the client, an object responsible to send a request
+ * Given URL from the client, an object responsible to send request for HTML page
  * to the URL.
  * 
  * @author PGD

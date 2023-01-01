@@ -1,9 +1,11 @@
 package com.nsl.web.exceptions.runtime;
 
+/**
+ * A runtime exception thrown if given values violate a specification.
+ * 
+ * @author PGD
+ */
 public class IllegalValueException extends RuntimeException {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     public IllegalValueException(String message) {
@@ -24,3 +26,4 @@ public class IllegalValueException extends RuntimeException {
     }
 
 }
+
