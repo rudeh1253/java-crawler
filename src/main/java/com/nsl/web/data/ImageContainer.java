@@ -17,7 +17,7 @@ public class ImageContainer {
     private final List<BufferElement> imageData;
     
     public ImageContainer() {
-	imageData = new LinkedList<>();
+        imageData = new LinkedList<>();
     }
     
     /**
@@ -27,7 +27,7 @@ public class ImageContainer {
      *               and its length.
      */
     public void addBuffer(BufferElement buffer) {
-	imageData.add(buffer);
+        imageData.add(buffer);
     }
     
     /**
@@ -38,8 +38,8 @@ public class ImageContainer {
      * @throws IOException in the cases of some errors occur in the process to write a file. 
      */
     public void writeAsFile(String path) throws IOException {
-	File file = new File(path);
-	writeAsFile(file);
+        File file = new File(path);
+        writeAsFile(file);
     }
     
     /**
@@ -49,15 +49,15 @@ public class ImageContainer {
      * @throws IOException in the cases of some errors occur in the process to write a file.
      */
     public void writeAsFile(File file) throws IOException {
-	BufferedOutputStream bw = null;
-	try {
-	    bw = new BufferedOutputStream(new FileOutputStream(file));
-	    writeAsFile(bw);
-	} finally {
-	    if (bw != null) {
-		bw.close();
-	    }
-	}
+        BufferedOutputStream bw = null;
+        try {
+            bw = new BufferedOutputStream(new FileOutputStream(file));
+            writeAsFile(bw);
+        } finally {
+            if (bw != null) {
+                bw.close();
+            }
+        }
     }
     
     /**
@@ -67,9 +67,9 @@ public class ImageContainer {
      * @throws IOException in the cases of some errors occur in the process to write a file.
      */
     public void writeAsFile(OutputStream os) throws IOException {
-	for (BufferElement buffer : this.imageData) {
-	    os.write(buffer.buffer, 0, buffer.len);
-	}
+        for (BufferElement buffer : this.imageData) {
+            os.write(buffer.buffer, 0, buffer.len);
+        }
     }
     
     /**
@@ -78,13 +78,13 @@ public class ImageContainer {
      * It contains image data of each buffer.
      */
     public static class BufferElement {
-	final byte[] buffer;
-	final int len;
-	
-	public BufferElement(byte[] buffer, int len) {
-	    this.buffer = buffer;
-	    this.len = len;
-	}
+        final byte[] buffer;
+        final int len;
+        
+        public BufferElement(byte[] buffer, int len) {
+            this.buffer = buffer;
+            this.len = len;
+        }
     }
     
     @Override
@@ -99,8 +99,8 @@ public class ImageContainer {
     }
     
     private void appendBufferToStringBuilder(byte[] buffer, int len, StringBuilder sb) {
-	for (int i = 0; i < len; i++) {
-	    sb.append(buffer[i]);
-	}
+        for (int i = 0; i < len; i++) {
+            sb.append(buffer[i]);
+        }
     }
 }

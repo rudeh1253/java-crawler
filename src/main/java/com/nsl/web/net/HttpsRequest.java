@@ -36,9 +36,9 @@ public abstract class HttpsRequest {
      * @throws IOException
      */
     public HttpsRequest(String url) throws IOException {
-	this.url = new URL(url);
-	this.cookies = null;
-	this.requestProperties = null;
+        this.url = new URL(url);
+        this.cookies = null;
+        this.requestProperties = null;
     }
     
     /**
@@ -47,22 +47,22 @@ public abstract class HttpsRequest {
      * @param nameValuePairs (Name, Value) pairs of cookies
      */
     public void setCookies(Map<String, String> nameValuePairs) {
-	StringBuilder sb = new StringBuilder();
-	for (String name : nameValuePairs.keySet()) {
-	    sb.append(name)
-	      .append('=')
-	      .append(nameValuePairs.get(name))
-	      .append(';');
-	}
-	this.cookies = sb.substring(0, sb.length() - 1);
+        StringBuilder sb = new StringBuilder();
+        for (String name : nameValuePairs.keySet()) {
+            sb.append(name)
+              .append('=')
+              .append(nameValuePairs.get(name))
+              .append(';');
+        }
+        this.cookies = sb.substring(0, sb.length() - 1);
     }
     
     public void setCookies(String nameValuePairsString) {
-	this.cookies = nameValuePairsString;
+        this.cookies = nameValuePairsString;
     }
     
     public void setProperties(Map<String, String> properties) {
-	this.requestProperties = properties;
+        this.requestProperties = properties;
     }
 
     /**
@@ -73,42 +73,42 @@ public abstract class HttpsRequest {
      * @throws IOException
      */
     public final DataContainer request() throws IOException {
-	return execute();
+        return execute();
     }
     
     /**
      * Helper method for request()
      */
     private DataContainer execute() throws IOException {
-	HttpsURLConnection conn = null;
-	DataContainer container = new DataContainer();
-	try {
-	    conn = buildConnection();
-	    int responseCode = conn.getResponseCode();
-	    boolean isSuccess = responseCode >= 200 && responseCode <= 300;
-	    storeData(container, conn, isSuccess);	    
-	} finally {
-	    close(conn);
-	}
-	return container;
+        HttpsURLConnection conn = null;
+        DataContainer container = new DataContainer();
+        try {
+            conn = buildConnection();
+            int responseCode = conn.getResponseCode();
+            boolean isSuccess = responseCode >= 200 && responseCode <= 300;
+            storeData(container, conn, isSuccess);            
+        } finally {
+            close(conn);
+        }
+        return container;
     }
 
     private HttpsURLConnection buildConnection() throws IOException {
-	HttpsURLConnection conn = (HttpsURLConnection)this.url.openConnection();
-	setConnection(conn);
-	if (this.cookies != null) {
-	    conn.setRequestProperty("Cookie", this.cookies);
-	}
-	setRequestProperties(conn);
-	return conn;
+        HttpsURLConnection conn = (HttpsURLConnection)this.url.openConnection();
+        setConnection(conn);
+        if (this.cookies != null) {
+            conn.setRequestProperty("Cookie", this.cookies);
+        }
+        setRequestProperties(conn);
+        return conn;
     }
     
     private void setRequestProperties(HttpsURLConnection conn) {
-	if (this.requestProperties != null) {
-	    for (String key : requestProperties.keySet()) {
-		conn.setRequestProperty(key, requestProperties.get(key));
-	    }
-	}
+        if (this.requestProperties != null) {
+            for (String key : requestProperties.keySet()) {
+                conn.setRequestProperty(key, requestProperties.get(key));
+            }
+        }
     }
     
     /**
@@ -133,13 +133,13 @@ public abstract class HttpsRequest {
      * @throws IOException
      */
     protected abstract void storeData(DataContainer container,
-	                              HttpsURLConnection conn,
-	                              boolean isSuccess) throws IOException;
+                                      HttpsURLConnection conn,
+                                      boolean isSuccess) throws IOException;
     
     private void close(HttpsURLConnection conn) throws IOException {
-	if (conn != null) {
-	    conn.disconnect();
-	}
+        if (conn != null) {
+            conn.disconnect();
+        }
     }
     
     /**
@@ -150,7 +150,7 @@ public abstract class HttpsRequest {
      * @throws IOException
      */
     public static HttpsRequest getHTMLRequester(String url) throws IOException {
-	return new HttpsRequestHTML(url);
+        return new HttpsRequestHTML(url);
     }
     
     /**
@@ -161,24 +161,24 @@ public abstract class HttpsRequest {
      * @throws IOException
      */
     public static HttpsRequest getImageRequester(String url) throws IOException {
-	return new HttpsRequestImage(url);
+        return new HttpsRequestImage(url);
     }
     
     @Override
     public String toString() {
-	
+        
         return "URL: " + url.toString() + '\n'
                + "Cookies: " + getCookiesAsToStringFormat();
     }
     
     private String getCookiesAsToStringFormat() {
-	if (this.cookies == null) {
-	    return "";
-	}
-	StringBuilder sb = new StringBuilder();
-	for (String cookie : this.cookies.split(";")) {
-	    sb.append("       ").append(cookie).append('\n');
-	}
-	return sb.substring(0, sb.length() - 1);
+        if (this.cookies == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String cookie : this.cookies.split(";")) {
+            sb.append("       ").append(cookie).append('\n');
+        }
+        return sb.substring(0, sb.length() - 1);
     }
 }

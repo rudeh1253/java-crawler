@@ -35,7 +35,7 @@ public abstract class MainCrawler {
      * @param entryURL where crawling starts.
      */
     public MainCrawler(String entryURL) {
-	this(entryURL, DEFAULT_THREAD_POOL_SIZE);
+        this(entryURL, DEFAULT_THREAD_POOL_SIZE);
     }
     
     /**
@@ -48,12 +48,12 @@ public abstract class MainCrawler {
      *                       the number of available processors.
      */
     public MainCrawler(String entryURL, int threadPoolSize) {
-	int maxCore = Runtime.getRuntime().availableProcessors();
-	this.threadPoolSize = threadPoolSize <= maxCore ? threadPoolSize : maxCore;
-	this.ENTRY_URL = entryURL;
-	this.visited = new HashSet<>();
-	this.cookies = null;
-	this.requestProperties = null;
+        int maxCore = Runtime.getRuntime().availableProcessors();
+        this.threadPoolSize = threadPoolSize <= maxCore ? threadPoolSize : maxCore;
+        this.ENTRY_URL = entryURL;
+        this.visited = new HashSet<>();
+        this.cookies = null;
+        this.requestProperties = null;
     }
     
     /**
@@ -61,49 +61,49 @@ public abstract class MainCrawler {
      * just call this method to start crawling.
      */
     public final void run() throws InterruptedException, ExecutionException, IOException {
-	ExecutorService executor = Executors.newFixedThreadPool(this.threadPoolSize);
-	processSingleUnit(ENTRY_URL, executor);
-	executor.shutdown();
+        ExecutorService executor = Executors.newFixedThreadPool(this.threadPoolSize);
+        processSingleUnit(ENTRY_URL, executor);
+        executor.shutdown();
     }
     
     private void processSingleUnit(String urlToBrowse, ExecutorService executor)
-	    throws InterruptedException, ExecutionException {
-	Future<List<String>> nextTargatesInFuture = executor.submit(() -> executionInCallable(urlToBrowse));
-	// DFS
-	List<String> nextTargets = nextTargatesInFuture.get();
-	for (String target : nextTargets) {
-	    if (!this.visited.contains(target)) {
-		this.visited.add(urlToBrowse);
-		processSingleUnit(target, executor);
-	    }
-	}
+            throws InterruptedException, ExecutionException {
+        Future<List<String>> nextTargatesInFuture = executor.submit(() -> executionInCallable(urlToBrowse));
+        // DFS
+        List<String> nextTargets = nextTargatesInFuture.get();
+        for (String target : nextTargets) {
+            if (!this.visited.contains(target)) {
+                this.visited.add(urlToBrowse);
+                processSingleUnit(target, executor);
+            }
+        }
     }
     
     private List<String> executionInCallable(String urlToBrowse) throws Exception {
-	System.out.println(Thread.currentThread().getName()); // TODO
-	DataContainer container = fetchPage(urlToBrowse);
-	HTMLContainer htmlContainer = (HTMLContainer)container.getData();
-	processPage(htmlContainer, urlToBrowse);
-	return getNextTargets(htmlContainer, urlToBrowse);
+        System.out.println(Thread.currentThread().getName()); // TODO
+        DataContainer container = fetchPage(urlToBrowse);
+        HTMLContainer htmlContainer = (HTMLContainer)container.getData();
+        processPage(htmlContainer, urlToBrowse);
+        return getNextTargets(htmlContainer, urlToBrowse);
     }
     
     private DataContainer fetchPage(String urlToBrowse) throws IOException {
-	HttpsRequest request = HttpsRequest.getHTMLRequester(urlToBrowse);
-	setCookie(request);
-	setRequestProperties(request);
-	return request.request();
+        HttpsRequest request = HttpsRequest.getHTMLRequester(urlToBrowse);
+        setCookie(request);
+        setRequestProperties(request);
+        return request.request();
     }
     
     private void setCookie(HttpsRequest request) {
-	if (cookies != null) {
-	    request.setCookies(cookies);
-	}
+        if (cookies != null) {
+            request.setCookies(cookies);
+        }
     }
     
     private void setRequestProperties(HttpsRequest request) {
-	if (requestProperties != null) {
-	    request.setProperties(requestProperties);
-	}
+        if (requestProperties != null) {
+            request.setProperties(requestProperties);
+        }
     }
     
     /**
@@ -114,7 +114,7 @@ public abstract class MainCrawler {
      * @param cookie name-value pairs of cookie.
      */
     public void setCookie(String cookie) {
-	this.cookies = cookie;
+        this.cookies = cookie;
     }
     
     /**
@@ -125,12 +125,12 @@ public abstract class MainCrawler {
      * @param cookie name-value pairs of cookie.
      */
     public void setCookie(Map<String, String> cookie) {
-	StringBuilder sb = new StringBuilder();
-	for (String name : cookie.keySet()) {
-	    String value = cookie.get(name);
-	    sb.append(name).append('=').append(value).append(';');
-	}
-	setCookie(sb.substring(0, sb.length() - 1));
+        StringBuilder sb = new StringBuilder();
+        for (String name : cookie.keySet()) {
+            String value = cookie.get(name);
+            sb.append(name).append('=').append(value).append(';');
+        }
+        setCookie(sb.substring(0, sb.length() - 1));
     }
     
     /**
@@ -139,7 +139,7 @@ public abstract class MainCrawler {
      * @param properties key-value pairs of properties.
      */
     public void setRequestProperty(Map<String, String> properties) {
-	this.requestProperties = properties;
+        this.requestProperties = properties;
     }
     
     /**
@@ -150,7 +150,7 @@ public abstract class MainCrawler {
      * @param thisPageURL URL of the page being processed now.
      */
     public void processPage(HTMLContainer htmlContainer, String thisPageURL) {
-	processPage(htmlContainer.toString(), thisPageURL);
+        processPage(htmlContainer.toString(), thisPageURL);
     }
     
     /**
@@ -173,6 +173,6 @@ public abstract class MainCrawler {
     public abstract List<String> findNextTargets(String html, String thisPageURL);
     
     public List<String> getNextTargets(HTMLContainer htmlContainer, String thisPageURL) {
-	return findNextTargets(htmlContainer.toString(), thisPageURL);
+        return findNextTargets(htmlContainer.toString(), thisPageURL);
     }
 }

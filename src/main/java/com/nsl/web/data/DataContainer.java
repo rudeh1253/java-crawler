@@ -25,7 +25,7 @@ public class DataContainer {
     private boolean alreadyDetermined;
 
     public DataContainer() {
-	alreadyDetermined = false;
+        alreadyDetermined = false;
     }
     
     /**
@@ -42,20 +42,20 @@ public class DataContainer {
      *                                        of this type.
      */
     public void setData(Object data, DataType type) {
-	if (alreadyDetermined) {
-	    return;
-	}
-	switch (type) {
-	case HTML:
-	    this.html = (HTMLContainer)data;
-	    break;
-	case IMAGE:
-	    this.image = (ImageContainer)data;
-	    break;
-	default:
-	    throw new IllegalValueException("The specified DataType is not available");
-	}
-	this.type = type;
+        if (alreadyDetermined) {
+            return;
+        }
+        switch (type) {
+        case HTML:
+            this.html = (HTMLContainer)data;
+            break;
+        case IMAGE:
+            this.image = (ImageContainer)data;
+            break;
+        default:
+            throw new IllegalValueException("The specified DataType is not available");
+        }
+        this.type = type;
     }
     
     /**
@@ -67,14 +67,14 @@ public class DataContainer {
      *                               enum DataContainer.DataType
      */
     public Object getData() {
-	switch (this.type) {
-	case HTML:
-	    return html;
-	case IMAGE:
-	    return image;
-	default:
-	    throw new IllegalValueException("The specified DataType is not available");
-	}
+        switch (this.type) {
+        case HTML:
+            return html;
+        case IMAGE:
+            return image;
+        default:
+            throw new IllegalValueException("The specified DataType is not available");
+        }
     }
     
     /**
@@ -83,7 +83,7 @@ public class DataContainer {
      * @author PGD
      */
     public static enum DataType {
-	HTML, IMAGE
+        HTML, IMAGE
     }
     
     @Override

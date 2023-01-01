@@ -19,7 +19,7 @@ public final class HTMLContainer {
      * @param htmlContent Content of HTML file provided.
      */
     public HTMLContainer(String htmlContent) {
-	this.htmlContent = htmlContent;
+        this.htmlContent = htmlContent;
     }
     
     @Override

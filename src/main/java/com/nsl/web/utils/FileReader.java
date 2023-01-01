@@ -23,7 +23,7 @@ public class FileReader {
      * @throws IOException
      */
     public FileReader(String path) throws IOException {
-	this.FILE = new File(path);
+        this.FILE = new File(path);
     }
     
     /**
@@ -34,7 +34,7 @@ public class FileReader {
      * @throws IOException
      */
     public FileReader(File file) throws IOException {
-	this.FILE = file;
+        this.FILE = file;
     }
     
     /**
@@ -44,26 +44,26 @@ public class FileReader {
      * @throws IOException
      */
     public String readAsString() throws IOException {
-	BufferedReader br = null;
-	StringBuilder sb = new StringBuilder();
-	try {
-	    br = new BufferedReader(new java.io.FileReader(this.FILE));
-	    
-	    String line = "";
-	    while (true) {
-		line = br.readLine();
-		if (line == null) {
-		    break;
-		}
-		sb.append(line).append('\n');
-	    }
-	} finally {
-	    if (br != null) {
-		br.close();
-	    }
-	}
-	
-	String completedString = sb.toString();
-	return completedString.stripTrailing();
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+        try {
+            br = new BufferedReader(new java.io.FileReader(this.FILE));
+            
+            String line = "";
+            while (true) {
+                line = br.readLine();
+                if (line == null) {
+                    break;
+                }
+                sb.append(line).append('\n');
+            }
+        } finally {
+            if (br != null) {
+                br.close();
+            }
+        }
+        
+        String completedString = sb.toString();
+        return completedString.stripTrailing();
     }
 }
