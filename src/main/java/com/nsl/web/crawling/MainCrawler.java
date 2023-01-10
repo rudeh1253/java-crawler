@@ -1,6 +1,7 @@
 package com.nsl.web.crawling;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.nsl.web.crawling.ThreadPoolCapacity.ThreadTicket;
 import com.nsl.web.data.DataContainer;
 import com.nsl.web.data.HTMLContainer;
 import com.nsl.web.net.HttpsRequest;
@@ -25,9 +27,10 @@ public abstract class MainCrawler {
     private final String ENTRY_URL;
     private final int threadPoolSize;
     private final Set<String> visited;
+    private final Set<String> failed = new HashSet<>();
+    private final ThreadPoolCapacity threadPoolCapacity = new ThreadPoolCapacity();
     private String cookies;
     private Map<String, String> requestProperties;
-    private int threadCount = 0;
     private Object lock = new Object();
     
     /**
@@ -61,11 +64,11 @@ public abstract class MainCrawler {
      * Start web crawling. After defining abstract functions and set request properties,
      * just call this method to start crawling.
      */
-    public final void run() throws InterruptedException, ExecutionException, IOException {
+    public final void run() throws InterruptedException, ExecutionException {
         ExecutorService executor = Executors.newFixedThreadPool(this.threadPoolSize);
         processSingleUnit(ENTRY_URL, executor);
         synchronized (lock) {
-            while (threadCount != 0) {
+            while (!threadPoolCapacity.didAllTicketsRetrieve()) {
                 lock.wait();
             }
         }
@@ -73,34 +76,46 @@ public abstract class MainCrawler {
     }
     
     private void processSingleUnit(String urlToBrowse, ExecutorService executor)
-            throws InterruptedException, ExecutionException, IOException {
+            throws InterruptedException, ExecutionException {
+        ThreadTicket threadTicekt;
         synchronized (lock) {
-            threadCount++;
+            threadTicekt = threadPoolCapacity.getThreadTicket();
         }
-        List<String> nextTargets = executionInCallable(urlToBrowse);
+        List<String> nextTargets = null;
+        try {
+            nextTargets = extract(urlToBrowse);
+        } catch (IOException e1) {
+            failed.add(urlToBrowse);
+        }
+        if (nextTargets == null) {
+            nextTargets = new ArrayList<>();
+        }
+        executeNext(urlToBrowse, executor, nextTargets);
+        synchronized (lock) {
+            threadPoolCapacity.retrieveTicket(threadTicekt);
+            lock.notify();
+        }
+    }
+
+    private void executeNext(String urlToBrowse, ExecutorService executor, List<String> nextTargets) {
         // DFS
         for (String target : nextTargets) {
             if (!this.visited.contains(target)) {
                 this.visited.add(urlToBrowse);
-                executor.submit(() -> {
-                    try {
-                        processSingleUnit(target, executor);
-                    } catch (InterruptedException | ExecutionException | IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                });
-            }
-        }
-        synchronized (lock) {
-            threadCount--;
-            if (threadCount == 0) {
-                lock.notify();
+                if (!executor.isShutdown()) {
+                    executor.submit(() -> {
+                        try {
+                            processSingleUnit(target, executor);
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
             }
         }
     }
     
-    private List<String> executionInCallable(String urlToBrowse) throws IOException {
+    private List<String> extract(String urlToBrowse) throws IOException {
         DataContainer container = fetchPage(urlToBrowse);
         HTMLContainer htmlContainer = (HTMLContainer)container.getData();
         processPage(htmlContainer, urlToBrowse);
@@ -109,18 +124,18 @@ public abstract class MainCrawler {
     
     private DataContainer fetchPage(String urlToBrowse) throws IOException {
         HttpsRequest request = HttpsRequest.getHTMLRequester(urlToBrowse);
-        setCookie(request);
-        setRequestProperties(request);
+        addCookies(request);
+        addRequestProperties(request);
         return request.request();
     }
     
-    private void setCookie(HttpsRequest request) {
+    private void addCookies(HttpsRequest request) {
         if (cookies != null) {
             request.setCookies(cookies);
         }
     }
     
-    private void setRequestProperties(HttpsRequest request) {
+    private void addRequestProperties(HttpsRequest request) {
         if (requestProperties != null) {
             request.setProperties(requestProperties);
         }
@@ -169,7 +184,7 @@ public abstract class MainCrawler {
      * @param htmlContainer web page data.
      * @param thisPageURL URL of the page being processed now.
      */
-    public void processPage(HTMLContainer htmlContainer, String thisPageURL) {
+    protected void processPage(HTMLContainer htmlContainer, String thisPageURL) {
         processPage(htmlContainer.toString(), thisPageURL);
     }
     
@@ -180,7 +195,7 @@ public abstract class MainCrawler {
      * @param html web page data.
      * @param thisPageURL URL of the page being processed now.
      */
-    public abstract void processPage(String html, String thisPageURL);
+    protected abstract void processPage(String html, String thisPageURL);
     
     /**
      * Find target URLs to fetch next. (In DFS method)
@@ -190,9 +205,17 @@ public abstract class MainCrawler {
      * @param thisPageURL URL of the page being processed now.
      * @return a list of target URLs.
      */
-    public abstract List<String> findNextTargets(String html, String thisPageURL);
+    protected abstract List<String> findNextTargets(String html, String thisPageURL);
     
-    public List<String> getNextTargets(HTMLContainer htmlContainer, String thisPageURL) {
+    protected List<String> getNextTargets(HTMLContainer htmlContainer, String thisPageURL) {
         return findNextTargets(htmlContainer.toString(), thisPageURL);
+    }
+
+    /**
+     * Return failed URLs.
+     * @return conatinig URLs which failed to fetch.
+     */
+    public final Set<String> getFailedPageURLs() {
+        return this.failed;
     }
 }

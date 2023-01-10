@@ -16,7 +16,7 @@ import com.nsl.web.data.DataContainer.DataType;
  */
 class HttpsRequestImage extends HttpsRequest {
     private static final int BUFFER_SIZE = 1024;
-    private static final int CONNECT_TIMEOUT = 3000;
+    private static final int CONNECT_TIMEOUT = 10000;
 
     public HttpsRequestImage(String url) throws IOException {
         super(url);
