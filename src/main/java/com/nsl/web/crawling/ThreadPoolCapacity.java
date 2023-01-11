@@ -1,20 +1,23 @@
 package com.nsl.web.crawling;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ThreadPoolCapacity {
-    private final Set<ThreadTicket> THREAD_TICKETS = ConcurrentHashMap.newKeySet();
+    private final Set<ThreadTicket> THREAD_TICKETS = new HashSet<>();
+    private Object lock = new Object();
 
     public ThreadTicket getThreadTicket() {
-        for (ThreadTicket ticket : THREAD_TICKETS) {
-            if (!ticket.isPublished()) {
-                return publishTicket(ticket);
+        synchronized (lock) {
+            for (ThreadTicket ticket : THREAD_TICKETS) {
+                if (!ticket.isPublished()) {
+                    return publishTicket(ticket);
+                }
             }
+            ThreadTicket newTicket = new ThreadTicket();
+            THREAD_TICKETS.add(newTicket);
+            return publishTicket(newTicket);
         }
-        ThreadTicket newTicket = new ThreadTicket();
-        THREAD_TICKETS.add(newTicket);
-        return publishTicket(newTicket);
     }
 
     private ThreadTicket publishTicket(ThreadTicket ticket) {
@@ -23,16 +26,20 @@ public class ThreadPoolCapacity {
     }
 
     public void retrieveTicket(ThreadTicket ticket) {
-        ticket.getBack();
+        synchronized (lock) {
+            ticket.getBack();
+        }
     }
 
     public boolean didAllTicketsRetrieve() {
-        for (ThreadTicket ticket : THREAD_TICKETS) {
-            if (ticket.isPublished()) {
-                return false;
+        synchronized (lock) {
+            for (ThreadTicket ticket : THREAD_TICKETS) {
+                if (ticket.isPublished()) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
     }
 
     public class ThreadTicket {
