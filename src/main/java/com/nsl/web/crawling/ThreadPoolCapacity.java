@@ -1,10 +1,10 @@
 package com.nsl.web.crawling;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ThreadPoolCapacity {
-    private final Set<ThreadTicket> THREAD_TICKETS = new HashSet<>();
+    private final Set<ThreadTicket> THREAD_TICKETS = ConcurrentHashMap.newKeySet();
 
     public ThreadTicket getThreadTicket() {
         for (ThreadTicket ticket : THREAD_TICKETS) {

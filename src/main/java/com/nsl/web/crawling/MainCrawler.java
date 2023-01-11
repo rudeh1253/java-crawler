@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,7 +56,7 @@ public abstract class MainCrawler {
         int maxCore = Runtime.getRuntime().availableProcessors();
         this.threadPoolSize = threadPoolSize <= maxCore ? threadPoolSize : maxCore;
         this.ENTRY_URL = entryURL;
-        this.visited = new HashSet<>();
+        this.visited = ConcurrentHashMap.newKeySet();
         this.cookies = null;
         this.requestProperties = null;
     }
@@ -66,6 +67,7 @@ public abstract class MainCrawler {
      */
     public final void run() throws InterruptedException, ExecutionException {
         ExecutorService executor = Executors.newFixedThreadPool(this.threadPoolSize);
+        this.visited.add(ENTRY_URL);
         processSingleUnit(ENTRY_URL, executor);
         synchronized (lock) {
             while (!threadPoolCapacity.didAllTicketsRetrieve()) {
@@ -101,7 +103,7 @@ public abstract class MainCrawler {
         // DFS
         for (String target : nextTargets) {
             if (!this.visited.contains(target)) {
-                this.visited.add(urlToBrowse);
+                this.visited.add(target);
                 if (!executor.isShutdown()) {
                     executor.submit(() -> {
                         try {
