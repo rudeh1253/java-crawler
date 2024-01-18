@@ -10,13 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import com.nsl.web.crawling.ThreadPoolCapacity.ThreadTicket;
 import com.nsl.web.data.Buffer;
 import com.nsl.web.data.DataContainer;
-import com.nsl.web.data.HtmlContainer;
 import com.nsl.web.net.HttpsRequest;
-import com.nsl.web.net.HttpsRequestHTML;
+import com.nsl.web.net.HttpsRequestHtml;
 
 /**
  * Crawler class defining execution of crawling.
@@ -28,13 +27,10 @@ import com.nsl.web.net.HttpsRequestHTML;
 public abstract class MainCrawler {
     private static final int DEFAULT_THREAD_POOL_SIZE = 10;
     private final String ENTRY_URL;
-    private final int threadPoolSize;
     private final Set<String> visited;
     private final Set<String> failed = new HashSet<>();
-    private final ThreadPoolCapacity threadPoolCapacity = new ThreadPoolCapacity();
     private String cookies;
     private Map<String, String> requestProperties;
-    private Object lock = new Object();
     
     /**
      * Constructor.
@@ -55,8 +51,6 @@ public abstract class MainCrawler {
      *                       the number of available processors.
      */
     public MainCrawler(String entryURL, int threadPoolSize) {
-        int maxCore = Runtime.getRuntime().availableProcessors();
-        this.threadPoolSize = threadPoolSize <= maxCore ? threadPoolSize : maxCore;
         this.ENTRY_URL = entryURL;
         this.visited = ConcurrentHashMap.newKeySet();
         this.cookies = null;
@@ -68,23 +62,15 @@ public abstract class MainCrawler {
      * just call this method to start crawling.
      */
     public final void run() throws InterruptedException, ExecutionException {
-        ExecutorService executor = Executors.newFixedThreadPool(this.threadPoolSize);
+        ExecutorService executor = Executors.newCachedThreadPool();
         this.visited.add(ENTRY_URL);
         processSingleUnit(ENTRY_URL, executor);
-        synchronized (lock) {
-            while (!threadPoolCapacity.didAllTicketsRetrieve()) {
-                lock.wait();
-            }
-        }
         executor.shutdown();
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     }
     
     private void processSingleUnit(String urlToBrowse, ExecutorService executor)
             throws InterruptedException, ExecutionException {
-        ThreadTicket threadTicekt;
-        synchronized (lock) {
-            threadTicekt = threadPoolCapacity.getThreadTicket();
-        }
         List<String> nextTargets = null;
         try {
             nextTargets = extract(urlToBrowse);
@@ -95,10 +81,6 @@ public abstract class MainCrawler {
             nextTargets = new ArrayList<>();
         }
         executeNext(urlToBrowse, executor, nextTargets);
-        synchronized (lock) {
-            threadPoolCapacity.retrieveTicket(threadTicekt);
-            lock.notify();
-        }
     }
 
     private void executeNext(String urlToBrowse, ExecutorService executor, List<String> nextTargets) {
@@ -126,19 +108,19 @@ public abstract class MainCrawler {
     }
     
     private DataContainer<String> fetchPage(String urlToBrowse) throws IOException {
-        HttpsRequestHTML request = HttpsRequest.getHTMLRequester(urlToBrowse);
+        HttpsRequestHtml request = HttpsRequest.getHTMLRequester(urlToBrowse);
         addCookies(request);
         addRequestProperties(request);
         return request.request();
     }
     
-    private void addCookies(HttpsRequest request) {
+    private <D> void addCookies(HttpsRequest<D> request) {
         if (cookies != null) {
             request.setCookies(cookies);
         }
     }
     
-    private void addRequestProperties(HttpsRequest request) {
+    private <D> void addRequestProperties(HttpsRequest<D> request) {
         if (requestProperties != null) {
             request.setProperties(requestProperties);
         }

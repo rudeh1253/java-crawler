@@ -147,8 +147,8 @@ public abstract class HttpsRequest<D> {
      * @return the instance.
      * @throws IOException
      */
-    public static HttpsRequestHTML getHTMLRequester(String url) throws IOException {
-        return new HttpsRequestHTML(url);
+    public static HttpsRequestHtml getHTMLRequester(String url) throws IOException {
+        return new HttpsRequestHtml(url);
     }
     
     /**
