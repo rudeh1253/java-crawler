@@ -15,7 +15,7 @@ import com.nsl.web.data.DataContainer;
  * 
  * @author PGD
  */
-public abstract class HttpsRequest {
+public abstract class HttpsRequest<D> {
     /**
      * URL object of target.
      */
@@ -72,25 +72,23 @@ public abstract class HttpsRequest {
      * @return response data.
      * @throws IOException
      */
-    public final DataContainer request() throws IOException {
+    public final DataContainer<D> request() throws IOException {
         return execute();
     }
     
     /**
      * Helper method for request()
      */
-    private DataContainer execute() throws IOException {
+    private DataContainer<D> execute() throws IOException {
         HttpsURLConnection conn = null;
-        DataContainer container = new DataContainer();
         try {
             conn = buildConnection();
             int responseCode = conn.getResponseCode();
             boolean isSuccess = responseCode >= 200 && responseCode <= 300;
-            storeData(container, conn, isSuccess);            
+            return storeData(conn, isSuccess);            
         } finally {
             close(conn);
         }
-        return container;
     }
 
     private HttpsURLConnection buildConnection() throws IOException {
@@ -125,16 +123,16 @@ public abstract class HttpsRequest {
      * Given a connection to the URL, take InputStream from the connection,
      * and get data through the stream.
      * 
-     * @param container instance where data is stored.
      * @param conn instance which connects 
      * @param isSuccess true if building connection was successful,
      *                  false if building connection failed,
      *                  according to the response code.
      * @throws IOException
      */
-    protected abstract void storeData(DataContainer container,
-                                      HttpsURLConnection conn,
-                                      boolean isSuccess) throws IOException;
+    protected abstract DataContainer<D> storeData(
+            HttpsURLConnection conn,
+            boolean isSuccess
+    ) throws IOException;
     
     private void close(HttpsURLConnection conn) throws IOException {
         if (conn != null) {
@@ -149,7 +147,7 @@ public abstract class HttpsRequest {
      * @return the instance.
      * @throws IOException
      */
-    public static HttpsRequest getHTMLRequester(String url) throws IOException {
+    public static HttpsRequestHTML getHTMLRequester(String url) throws IOException {
         return new HttpsRequestHTML(url);
     }
     
@@ -160,8 +158,8 @@ public abstract class HttpsRequest {
      * @return the instance.
      * @throws IOException
      */
-    public static HttpsRequest getImageRequester(String url) throws IOException {
-        return new HttpsRequestImage(url);
+    public static HttpsRequestBinary getImageRequester(String url) throws IOException {
+        return new HttpsRequestBinary(url);
     }
     
     @Override

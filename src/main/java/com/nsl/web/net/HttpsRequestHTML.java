@@ -6,8 +6,8 @@ import java.io.InputStreamReader;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.nsl.web.data.Buffer;
 import com.nsl.web.data.DataContainer;
-import com.nsl.web.data.DataContainer.DataType;
 import com.nsl.web.data.HTMLContainer;
 
 /**
@@ -16,7 +16,7 @@ import com.nsl.web.data.HTMLContainer;
  * 
  * @author PGD
  */
-class HttpsRequestHTML extends HttpsRequest {
+public class HttpsRequestHTML extends HttpsRequest<String> {
     private static final int CONNECT_TIMEOUT = 10000;
 
     public HttpsRequestHTML(String url) throws IOException {
@@ -31,7 +31,7 @@ class HttpsRequestHTML extends HttpsRequest {
     }
 
     @Override
-    protected void storeData(DataContainer container, HttpsURLConnection conn, boolean isSuccess) throws IOException {
+    protected DataContainer<String> storeData(HttpsURLConnection conn, boolean isSuccess) throws IOException {
         BufferedReader br = null;
         try {
             if (isSuccess) {
@@ -40,14 +40,12 @@ class HttpsRequestHTML extends HttpsRequest {
                 br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
             
-            StringBuilder sb = new StringBuilder();
+            HTMLContainer htmlContainer = new HTMLContainer();
             String line;
             while ((line = br.readLine()) != null) {
-                sb.append(line);
+                htmlContainer.addBuffer(new Buffer<>(line, line.length()));
             }
-            
-            HTMLContainer result = new HTMLContainer(sb.toString());
-            container.setData(result, DataType.HTML);
+            return htmlContainer;
         } finally {
             close(br);
         }

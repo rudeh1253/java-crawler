@@ -7,33 +7,22 @@ package com.nsl.web.data;
  * 
  * @author PGD
  */
-public final class HTMLContainer {
-    /**
-     * Full HTML content of String type.
-     */
-    private final String htmlContent;
+public final class HTMLContainer extends DataContainer<String> {
     
     /**
-     * Constructor.
-     * 
-     * @param htmlContent Content of HTML file provided.
+     * Default constructor.
      */
-    public HTMLContainer(String htmlContent) {
-        this.htmlContent = htmlContent;
+    public HTMLContainer() {
+        super();
     }
-    
+
     @Override
-    public boolean equals(Object obj) {
-        return htmlContent.equals(obj);
-    }
-    
-    @Override
-    public int hashCode() {
-        return htmlContent.hashCode();
+    public void addBuffer(Buffer<String> buffer) {
+        this.data.add(buffer);
     }
     
     @Override
     public String toString() {
-        return this.htmlContent;
+        return super.toString();
     }
 }

@@ -4,9 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import javax.net.ssl.HttpsURLConnection;
 
+import com.nsl.web.data.Buffer;
 import com.nsl.web.data.DataContainer;
-import com.nsl.web.data.ImageContainer;
-import com.nsl.web.data.DataContainer.DataType;
+import com.nsl.web.data.BinaryContainer;
 
 /**
  * Given URL from the client, an object responsible to send request for an image
@@ -14,11 +14,11 @@ import com.nsl.web.data.DataContainer.DataType;
  * 
  * @author PGD
  */
-class HttpsRequestImage extends HttpsRequest {
+public class HttpsRequestBinary extends HttpsRequest<byte[]> {
     private static final int BUFFER_SIZE = 1024;
     private static final int CONNECT_TIMEOUT = 10000;
 
-    public HttpsRequestImage(String url) throws IOException {
+    public HttpsRequestBinary(String url) throws IOException {
         super(url);
     }
 
@@ -29,21 +29,21 @@ class HttpsRequestImage extends HttpsRequest {
     }
 
     @Override
-    protected void storeData(DataContainer container, HttpsURLConnection conn, boolean isSuccess) throws IOException {
+    protected DataContainer<byte[]> storeData(HttpsURLConnection conn, boolean isSuccess) throws IOException {
         BufferedInputStream is = null;
         try {
             is = isSuccess ? new BufferedInputStream(conn.getInputStream())
                            : new BufferedInputStream(conn.getErrorStream());
-            ImageContainer imageContainer = new ImageContainer();
+            BinaryContainer imageContainer = new BinaryContainer();
             while (true) {
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int len = is.read(buffer, 0, BUFFER_SIZE);
                 if (len == -1) {
                     break;
                 }
-                imageContainer.addBuffer(new ImageContainer.BufferElement(buffer, len));
+                imageContainer.addBuffer(new Buffer<>(buffer, len));
             }
-            container.setData(imageContainer, DataType.IMAGE);
+            return imageContainer;
         } finally {
             if (is != null) {
                 is.close();

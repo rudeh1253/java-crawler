@@ -12,9 +12,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.nsl.web.crawling.ThreadPoolCapacity.ThreadTicket;
+import com.nsl.web.data.Buffer;
 import com.nsl.web.data.DataContainer;
 import com.nsl.web.data.HTMLContainer;
 import com.nsl.web.net.HttpsRequest;
+import com.nsl.web.net.HttpsRequestHTML;
 
 /**
  * Crawler class defining execution of crawling.
@@ -118,14 +120,13 @@ public abstract class MainCrawler {
     }
     
     private List<String> extract(String urlToBrowse) throws IOException {
-        DataContainer container = fetchPage(urlToBrowse);
-        HTMLContainer htmlContainer = (HTMLContainer)container.getData();
-        processPage(htmlContainer, urlToBrowse);
-        return getNextTargets(htmlContainer, urlToBrowse);
+        DataContainer<String> container = fetchPage(urlToBrowse);
+        processPage(container, urlToBrowse);
+        return getNextTargets(container, urlToBrowse);
     }
     
-    private DataContainer fetchPage(String urlToBrowse) throws IOException {
-        HttpsRequest request = HttpsRequest.getHTMLRequester(urlToBrowse);
+    private DataContainer<String> fetchPage(String urlToBrowse) throws IOException {
+        HttpsRequestHTML request = HttpsRequest.getHTMLRequester(urlToBrowse);
         addCookies(request);
         addRequestProperties(request);
         return request.request();
@@ -186,8 +187,17 @@ public abstract class MainCrawler {
      * @param htmlContainer web page data.
      * @param thisPageURL URL of the page being processed now.
      */
-    protected void processPage(HTMLContainer htmlContainer, String thisPageURL) {
-        processPage(htmlContainer.toString(), thisPageURL);
+    protected void processPage(DataContainer<String> htmlContainer, String thisPageURL) {
+        processPage(containerToString(htmlContainer), thisPageURL);
+    }
+
+    private String containerToString(DataContainer<String> htmlContainer) {
+        StringBuilder sb = new StringBuilder();
+        List<Buffer<String>> data = htmlContainer.getData();
+        for (Buffer<String> buffer : data) {
+            sb.append(buffer.getBuffer());
+        }
+        return sb.toString();
     }
     
     /**
@@ -209,8 +219,8 @@ public abstract class MainCrawler {
      */
     protected abstract List<String> findNextTargets(String html, String thisPageURL);
     
-    protected List<String> getNextTargets(HTMLContainer htmlContainer, String thisPageURL) {
-        return findNextTargets(htmlContainer.toString(), thisPageURL);
+    protected List<String> getNextTargets(DataContainer<String> htmlContainer, String thisPageURL) {
+        return findNextTargets(containerToString(htmlContainer), thisPageURL);
     }
 
     /**
