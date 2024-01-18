@@ -7,12 +7,12 @@ package com.nsl.web.data;
  * 
  * @author PGD
  */
-public final class HTMLContainer extends DataContainer<String> {
+public final class HtmlContainer extends DataContainer<String> {
     
     /**
      * Default constructor.
      */
-    public HTMLContainer() {
+    public HtmlContainer() {
         super();
     }
 

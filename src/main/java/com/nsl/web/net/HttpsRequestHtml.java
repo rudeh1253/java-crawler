@@ -8,7 +8,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import com.nsl.web.data.Buffer;
 import com.nsl.web.data.DataContainer;
-import com.nsl.web.data.HTMLContainer;
+import com.nsl.web.data.HtmlContainer;
 
 /**
  * Given URL from the client, an object responsible to send request for HTML page
@@ -16,10 +16,10 @@ import com.nsl.web.data.HTMLContainer;
  * 
  * @author PGD
  */
-public class HttpsRequestHTML extends HttpsRequest<String> {
+public class HttpsRequestHtml extends HttpsRequest<String> {
     private static final int CONNECT_TIMEOUT = 10000;
 
-    public HttpsRequestHTML(String url) throws IOException {
+    public HttpsRequestHtml(String url) throws IOException {
         super(url);
     }
 
@@ -40,7 +40,7 @@ public class HttpsRequestHTML extends HttpsRequest<String> {
                 br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
             }
             
-            HTMLContainer htmlContainer = new HTMLContainer();
+            HtmlContainer htmlContainer = new HtmlContainer();
             String line;
             while ((line = br.readLine()) != null) {
                 htmlContainer.addBuffer(new Buffer<>(line, line.length()));

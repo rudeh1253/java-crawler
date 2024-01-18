@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import com.nsl.web.crawling.ThreadPoolCapacity.ThreadTicket;
 import com.nsl.web.data.Buffer;
 import com.nsl.web.data.DataContainer;
-import com.nsl.web.data.HTMLContainer;
+import com.nsl.web.data.HtmlContainer;
 import com.nsl.web.net.HttpsRequest;
 import com.nsl.web.net.HttpsRequestHTML;
 
