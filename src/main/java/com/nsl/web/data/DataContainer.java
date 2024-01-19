@@ -16,7 +16,15 @@ public abstract class DataContainer<D> {
         this.data = new LinkedList<>();
     }
     
-    public abstract void addBuffer(Buffer<D> buffer);
+    /**
+     * Store the buffer data in this image data.
+     * 
+     * @param buffer should contain a buffer of image data
+     *               and its length.
+     */
+    public void addBuffer(Buffer<D> buffer) {
+        this.data.add(buffer);
+    }
 
     /**
      * Return data stored in this instance.

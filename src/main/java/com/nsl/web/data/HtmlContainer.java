@@ -15,11 +15,6 @@ public final class HtmlContainer extends DataContainer<String> {
     public HtmlContainer() {
         super();
     }
-
-    @Override
-    public void addBuffer(Buffer<String> buffer) {
-        this.data.add(buffer);
-    }
     
     @Override
     public String toString() {
