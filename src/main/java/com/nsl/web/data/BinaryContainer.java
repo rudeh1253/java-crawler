@@ -1,12 +1,15 @@
 package com.nsl.web.data;
 
 /**
- * A class containing image data.
+ * A container contains binary data.
  * 
  * @author PGD
  */
 public class BinaryContainer extends DataContainer<byte[]> {
     
+    /**
+     * Default constructor.
+     */
     public BinaryContainer() {
         super();
     }

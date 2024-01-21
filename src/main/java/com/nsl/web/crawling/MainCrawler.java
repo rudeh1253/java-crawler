@@ -73,7 +73,7 @@ public abstract class MainCrawler {
 
     private void processSingle(String urlToBrowse, Process process, ExecutorService executor)
             throws InterruptedException, ExecutionException {
-        List<String> nextTargets = process.processSingleUnit(urlToBrowse);
+        List<String> nextTargets = process.processSinglePage(urlToBrowse);
         executeNext(executor, process, nextTargets);
     }
 
@@ -81,7 +81,7 @@ public abstract class MainCrawler {
         // DFS
         for (String target : nextTargets) {
             if (!process.isVisited(target)) {
-                process.checkTargetToVisited(target);
+                process.markTargetToVisited(target);
                 if (!executor.isShutdown()) {
                     executor.submit(() -> {
                         try {

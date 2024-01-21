@@ -4,23 +4,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Container which can contain data of different types.
- * Each container can contain only one object.
+ * Container which can contain data.
+ * Containers of each type of data should extend this class.
  * 
  * @author PGD
  */
 public abstract class DataContainer<D> {
     protected final List<Buffer<D>> data;
 
+    /**
+     * Default constructor.
+     */
     public DataContainer() {
         this.data = new LinkedList<>();
     }
     
     /**
-     * Store the buffer data in this image data.
-     * 
-     * @param buffer should contain a buffer of image data
-     *               and its length.
+     * Add a buffer of data.
+     * The type of data will be determined by generic type.
+     * @param buffer should contain a buffer of data and its length.
      */
     public void addBuffer(Buffer<D> buffer) {
         this.data.add(buffer);
@@ -28,8 +30,7 @@ public abstract class DataContainer<D> {
 
     /**
      * Return data stored in this instance.
-     * 
-     * @return the data this container contains.
+     * @return a list of buffers of data.
      */
     public List<Buffer<D>> getData() {
         return this.data;

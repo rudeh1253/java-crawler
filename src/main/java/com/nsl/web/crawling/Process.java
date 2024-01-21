@@ -11,6 +11,11 @@ import com.nsl.web.data.DataContainer;
 import com.nsl.web.net.HttpsRequest;
 import com.nsl.web.net.HttpsRequestHtml;
 
+/**
+ * This class represents a process of crawling.
+ * The instance is instantiated at the beginning of a crawling,
+ * and destroyed after end of the crawling.
+ */
 public class Process {
     private final MainCrawler crawler;
     private final Set<String> visited = ConcurrentHashMap.newKeySet();
@@ -18,6 +23,13 @@ public class Process {
     private final String cookies;
     private final Map<String, String> requestProperties;
 
+    /**
+     * A constructor.
+     * @param crawler which is responsible for crawling.
+     * @param entryUrl an entry point of crawling.
+     * @param cookies you can send request with cookies. If you don't want, set null.
+     * @param requestProperties you can send request with request properties. If you don't want, set null.
+     */
     public Process(
             MainCrawler crawler,
             String entryUrl,
@@ -29,6 +41,13 @@ public class Process {
         this.requestProperties = requestProperties;
     }
 
+    /**
+     * A constructor.
+     * @param crawler which is responsible for crawling.
+     * @param entryUrl an entry point of crawling.
+     * @param cookies you can send request with cookies. If you don't want, set null.
+     * @param requestProperties you can send request with request properties. If you don't want, set null.
+     */
     public Process(
         MainCrawler crawler,
         String entryUrl,
@@ -90,7 +109,12 @@ public class Process {
         }
     }
 
-    public List<String> processSingleUnit(String urlToBrowse) {
+    /**
+     * Process a page and extract URLs of next target pages.
+     * @param urlToBrowse URL specifies the target.
+     * @return a list contains next targets to process.
+     */
+    public List<String> processSinglePage(String urlToBrowse) {
         SingleProcessUnit singleProcessUnit = new SingleProcessUnit(this.cookies, this.requestProperties, this.crawler);
         List<String> nextTargets = null;
         DataContainer<String> fetchedPage = null;
@@ -109,14 +133,27 @@ public class Process {
         return nextTargets;
     }
 
+    /**
+     * Given targetUrl, checks if the target has been visited.
+     * @param targetUrl to check.
+     * @return true if the crawler have visited the target, otherwise false.
+     */
     public boolean isVisited(String targetUrl) {
         return this.visited.contains(targetUrl);
     }
 
-    public void checkTargetToVisited(String targetUrl) {
+    /**
+     * Mark targetUrl that has already been visited.
+     * @param targetUrl to mark.
+     */
+    public void markTargetToVisited(String targetUrl) {
         this.visited.add(targetUrl);
     }
 
+    /**
+     * Get URLs that the crawler failed to process, by IOException.
+     * @return a set of URLs that a process of the crawler has failed to visit.
+     */
     public Set<String> getFailed() {
         return Collections.unmodifiableSet(this.failed);
     }

@@ -9,7 +9,7 @@ import com.nsl.web.data.DataContainer;
 import com.nsl.web.data.BinaryContainer;
 
 /**
- * Given URL from the client, an object responsible to send request for an image
+ * Given URL from the client, an object responsible to send request for binary data
  * to the URL.
  * 
  * @author PGD
