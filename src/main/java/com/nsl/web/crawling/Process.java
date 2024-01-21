@@ -15,6 +15,8 @@ import com.nsl.web.net.HttpsRequestHtml;
  * This class represents a process of crawling.
  * The instance is instantiated at the beginning of a crawling,
  * and destroyed after end of the crawling.
+ * 
+ * @author PGD
  */
 public class Process {
     private final MainCrawler crawler;
