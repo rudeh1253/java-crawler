@@ -2,6 +2,8 @@ package com.nsl.web.net;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+
 import javax.net.ssl.HttpsURLConnection;
 
 import com.nsl.web.data.Buffer;
@@ -17,8 +19,8 @@ import com.nsl.web.data.BinaryContainer;
 public class HttpsRequestBinary extends HttpsRequest<byte[]> {
     private static final int BUFFER_SIZE = 1024;
     private static final int CONNECT_TIMEOUT = 10000;
-
-    public HttpsRequestBinary(String url) throws IOException {
+    
+    HttpsRequestBinary(String url) throws MalformedURLException {
         super(url);
     }
 

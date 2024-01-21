@@ -3,6 +3,7 @@ package com.nsl.web.net;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -19,7 +20,7 @@ import com.nsl.web.data.HtmlContainer;
 public class HttpsRequestHtml extends HttpsRequest<String> {
     private static final int CONNECT_TIMEOUT = 10000;
 
-    public HttpsRequestHtml(String url) throws IOException {
+    HttpsRequestHtml(String url) throws MalformedURLException {
         super(url);
     }
 

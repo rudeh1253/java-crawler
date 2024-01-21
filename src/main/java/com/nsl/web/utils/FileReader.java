@@ -20,7 +20,7 @@ public class FileReader {
      * 
      * @param path should represent the existing file name.
      *             Otherwise, it will behave unpredictably.
-     * @throws IOException
+     * @throws IOException is thrown if there is a problem in the process of file stream
      */
     public FileReader(String path) throws IOException {
         this.FILE = new File(path);
@@ -29,9 +29,9 @@ public class FileReader {
     /**
      * Constructor.
      * 
-     * @param path should represent the existing file name.
+     * @param file should represent the existing file name.
      *             Otherwise, it will behave unpredictably.
-     * @throws IOException
+     * @throws IOException is thrown if there is a problem in the process of file stream
      */
     public FileReader(File file) throws IOException {
         this.FILE = file;
@@ -41,7 +41,7 @@ public class FileReader {
      * Read the file.
      * 
      * @return all of the content of the file.
-     * @throws IOException
+     * @throws IOException is thrown if there is a problem in the process of file stream
      */
     public String readAsString() throws IOException {
         BufferedReader br = null;

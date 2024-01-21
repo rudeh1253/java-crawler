@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +40,7 @@ public abstract class MainCrawler {
      * 
      * @param entryURL where crawling starts.
      * @param threadPoolSize size of thread pool.
-     *                       If the number of available processors < threadPoolSize,
+     *                       If the number of available processors is less than threadPoolSize,
      *                       the size of the thread pool would be the same as
      *                       the number of available processors.
      */
@@ -54,15 +54,15 @@ public abstract class MainCrawler {
      * Start web crawling. After defining abstract functions and set request properties,
      * just call this method to start crawling.
      * @return a set data structure containing failed page urls
-     * @throws InterruptedException
-     * @throws ExecutionException
+     * @throws InterruptedException if interrupted while waiting
+     * @throws RejectedExecutionException if the task cannot be scheduled for execution
      */
-    public final Set<String> run() throws InterruptedException, ExecutionException {
+    public final Set<String> run() throws InterruptedException, RejectedExecutionException {
         return start(entryUrl);
     }
     
     private Set<String> start(String entryUrl)
-            throws InterruptedException, ExecutionException {
+            throws InterruptedException, RejectedExecutionException {
         ExecutorService executor = Executors.newCachedThreadPool();
         Process process = new Process(this, entryUrl, this.cookies, this.requestProperties);
         processSingle(entryUrl, process, executor);
@@ -72,7 +72,7 @@ public abstract class MainCrawler {
     }
 
     private void processSingle(String urlToBrowse, Process process, ExecutorService executor)
-            throws InterruptedException, ExecutionException {
+            throws InterruptedException, RejectedExecutionException {
         List<String> nextTargets = process.processSinglePage(urlToBrowse);
         executeNext(executor, process, nextTargets);
     }
@@ -86,7 +86,7 @@ public abstract class MainCrawler {
                     executor.submit(() -> {
                         try {
                             processSingle(target, process, executor);
-                        } catch (InterruptedException | ExecutionException e) {
+                        } catch (InterruptedException | RejectedExecutionException e) {
                             e.printStackTrace();
                         }
                     });
@@ -98,7 +98,7 @@ public abstract class MainCrawler {
     /**
      * Set cookies into request.
      * The String should be the following format:
-     * <name>=<value>;<name>=<value>;...;<name>=<value>
+     * [name]=[value];[name]=[value];...;[name]=[value]
      * 
      * @param cookie name-value pairs of cookie.
      */
@@ -152,7 +152,7 @@ public abstract class MainCrawler {
     
     /**
      * Process fetched HTML data.
-     * The responsibility to define how to parse the page is on you. >_<
+     * The responsibility to define how to parse the page is on you.
      * @param html web page data.
      * @param thisPageUrl URL of the page being processed now.
      */

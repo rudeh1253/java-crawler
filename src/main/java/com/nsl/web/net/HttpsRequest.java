@@ -1,6 +1,7 @@
 package com.nsl.web.net;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -32,10 +33,11 @@ public abstract class HttpsRequest<D> {
     private Map<String, String> requestProperties;
     
     /**
+     * A constructor.
      * @param url where to send request
-     * @throws IOException
+     * @throws MalformedURLException if no protocol is specified, or an unknown protocol is found, or spec is null, or the parsed URL fails to comply with the specific syntax of the associated protocol.
      */
-    public HttpsRequest(String url) throws IOException {
+    public HttpsRequest(String url) throws MalformedURLException {
         this.url = new URL(url);
         this.cookies = null;
         this.requestProperties = null;
@@ -57,10 +59,20 @@ public abstract class HttpsRequest<D> {
         this.cookies = sb.substring(0, sb.length() - 1);
     }
     
+    /**
+     * Set cookies to send in request.
+     * @param nameValuePairsString a string containig cookies information. The format is as follows:
+     *                             [key1]=[value1];[key2]=[value2];...
+     *                             The CSV is a semicolon(;)
+     */
     public void setCookies(String nameValuePairsString) {
         this.cookies = nameValuePairsString;
     }
     
+    /**
+     * Set request properties.
+     * @param properties a map instance containing key as the key of property, value as the value of property.
+     */
     public void setProperties(Map<String, String> properties) {
         this.requestProperties = properties;
     }
@@ -70,7 +82,7 @@ public abstract class HttpsRequest<D> {
      * Just call this method to send request and get response.
      * 
      * @return response data.
-     * @throws IOException
+     * @throws IOException is thrown if there is problem in network connection.
      */
     public final DataContainer<D> request() throws IOException {
         return execute();
@@ -114,7 +126,7 @@ public abstract class HttpsRequest<D> {
      * For instance, set content type, or request method.
      * 
      * @param conn connection object responsible to connect to the server.
-     * @throws IOException
+     * @throws IOException is thrown if there is some problem in building connection.
      */
     protected abstract void setConnection(HttpsURLConnection conn) throws IOException;
     
@@ -127,7 +139,8 @@ public abstract class HttpsRequest<D> {
      * @param isSuccess true if building connection was successful,
      *                  false if building connection failed,
      *                  according to the response code.
-     * @throws IOException
+     * @return a data container which contains the resource.
+     * @throws IOException is thrown if there is some problem in the InputStream received from HttpsURLConnection.
      */
     protected abstract DataContainer<D> storeData(
             HttpsURLConnection conn,
@@ -145,9 +158,9 @@ public abstract class HttpsRequest<D> {
      * 
      * @param url to request.
      * @return the instance.
-     * @throws IOException
+     * @throws MalformedURLException if no protocol is specified, or an unknown protocol is found, or spec is null, or the parsed URL fails to comply with the specific syntax of the associated protocol.
      */
-    public static HttpsRequestHtml getHTMLRequester(String url) throws IOException {
+    public static HttpsRequestHtml getHTMLRequester(String url) throws MalformedURLException {
         return new HttpsRequestHtml(url);
     }
     
@@ -156,9 +169,9 @@ public abstract class HttpsRequest<D> {
      * 
      * @param url to request.
      * @return the instance.
-     * @throws IOException
+     * @throws MalformedURLException if no protocol is specified, or an unknown protocol is found, or spec is null, or the parsed URL fails to comply with the specific syntax of the associated protocol.
      */
-    public static HttpsRequestBinary getImageRequester(String url) throws IOException {
+    public static HttpsRequestBinary getImageRequester(String url) throws MalformedURLException {
         return new HttpsRequestBinary(url);
     }
     

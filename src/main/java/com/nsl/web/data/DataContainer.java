@@ -10,6 +10,9 @@ import java.util.List;
  * @author PGD
  */
 public abstract class DataContainer<D> {
+    /**
+     * Protected field that represents the full data.
+     */
     protected final List<Buffer<D>> data;
 
     /**
