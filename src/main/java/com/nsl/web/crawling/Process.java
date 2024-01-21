@@ -76,12 +76,12 @@ public class Process {
             return request.request();
         }
 
-        public void processPage(DataContainer<String> pageDataForBrowse) {
-            this.crawler.processPage(pageDataForBrowse);
+        public void processPage(DataContainer<String> pageDataForBrowse, String thisPageUrl) {
+            this.crawler.processPage(pageDataForBrowse, thisPageUrl);
         }
 
-        public List<String> getNextTargets(DataContainer<String> pageDataForBrowse) {
-            return crawler.findNextTargets(pageDataForBrowse);
+        public List<String> getNextTargets(DataContainer<String> pageDataForBrowse, String thisPageUrl) {
+            return crawler.findNextTargets(pageDataForBrowse, thisPageUrl);
         }
 
         @Override
@@ -100,8 +100,8 @@ public class Process {
             this.failed.add(urlToBrowse);
         }
         if (fetchedPage != null) {
-            singleProcessUnit.processPage(fetchedPage);
-            nextTargets = singleProcessUnit.getNextTargets(fetchedPage);
+            singleProcessUnit.processPage(fetchedPage, urlToBrowse);
+            nextTargets = singleProcessUnit.getNextTargets(fetchedPage, urlToBrowse);
         }
         if (nextTargets == null) {
             nextTargets = new ArrayList<>();

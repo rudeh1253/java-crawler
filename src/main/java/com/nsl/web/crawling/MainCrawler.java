@@ -134,11 +134,11 @@ public abstract class MainCrawler {
     /**
      * Process fetched HTML data.
      * The responsibility to define how to parse the page is on you.
-     * 
      * @param htmlContainer web page data.
+     * @param thisPageUrl URL of the page being processed now.
      */
-    protected void processPage(DataContainer<String> htmlContainer) {
-        processPage(containerToString(htmlContainer));
+    protected void processPage(DataContainer<String> htmlContainer, String thisPageUrl) {
+        processPage(containerToString(htmlContainer), thisPageUrl);
     }
 
     private String containerToString(DataContainer<String> htmlContainer) {
@@ -153,22 +153,23 @@ public abstract class MainCrawler {
     /**
      * Process fetched HTML data.
      * The responsibility to define how to parse the page is on you. >_<
-     * 
      * @param html web page data.
+     * @param thisPageUrl URL of the page being processed now.
      */
-    protected abstract void processPage(String html);
+    protected abstract void processPage(String html, String thisPageUrl);
     
     /**
      * Find target URLs to fetch next. (In DFS method)
      * If the list containing next targets contains visited URLs already,
      * such targets will be ignored. 
      * @param html current page which finding next targets within
+     * @param thisPageUrl URL of the page being processed now
      * @return a list of target URLs.
      */
-    protected abstract List<String> findNextTargets(String html);
+    protected abstract List<String> findNextTargets(String html, String thisPageUrl);
     
-    protected List<String> findNextTargets(DataContainer<String> htmlContainer) {
-        return findNextTargets(containerToString(htmlContainer));
+    protected List<String> findNextTargets(DataContainer<String> htmlContainer, String thisPageUrl) {
+        return findNextTargets(containerToString(htmlContainer), thisPageUrl);
     }
 
     /**
